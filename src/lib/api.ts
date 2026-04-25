@@ -8,6 +8,6 @@ export const api = axios.create({
   headers: { "Content-Type": "application/json" },
 })
 
-export function apiMethod(method: string) {
-  return `${BASE}/api/method/${method}`
+export function apiUrl(method: string) {
+  return `/api/method/${method}`
 }
