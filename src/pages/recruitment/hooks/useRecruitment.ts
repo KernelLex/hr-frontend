@@ -53,6 +53,28 @@ export function useInterviewRounds() {
   })
 }
 
+export function useDesignations() {
+  return useQuery({
+    queryKey: ["designations"],
+    queryFn: async () => {
+      const res = await api.get(apiUrl("hr_client.api.recruitment.get_designations"))
+      return (res.data.message.designations as string[])
+    },
+    staleTime: 1000 * 60 * 10,
+  })
+}
+
+export function useDepartments() {
+  return useQuery({
+    queryKey: ["departments"],
+    queryFn: async () => {
+      const res = await api.get(apiUrl("hr_client.api.recruitment.get_departments"))
+      return (res.data.message.departments as Array<{ name: string; label: string }>)
+    },
+    staleTime: 1000 * 60 * 10,
+  })
+}
+
 export function useMoveCandidateMutation() {
   const qc = useQueryClient()
   return useMutation({

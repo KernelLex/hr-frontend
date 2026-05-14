@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Toaster } from "@/components/ui/sonner"
 import { AuthProvider } from "@/context/AuthContext"
+import { PermissionsProvider } from "@/context/PermissionsContext"
 import { ProtectedRoute, PublicOnlyRoute } from "@/components/auth/ProtectedRoute"
 import { Layout } from "@/components/layout/Layout"
 import { Login } from "@/pages/Login"
@@ -9,6 +10,15 @@ import { Dashboard } from "@/pages/Dashboard"
 import { RecruitmentPage } from "@/pages/recruitment/RecruitmentPage"
 import { EmployeesPage } from "@/pages/employees/EmployeesPage"
 import { EmployeeDetailPage } from "@/pages/employees/EmployeeDetailPage"
+import { PermissionsPage } from "@/pages/admin/permissions/PermissionsPage"
+import { EmployeeProfilePage } from "@/pages/profile/EmployeeProfilePage"
+import { AdminEmployeesPage } from "@/pages/admin/employees/AdminEmployeesPage"
+import { AdminEmployeeDetailPage } from "@/pages/admin/employees/AdminEmployeeDetailPage"
+import { AttendancePage } from "@/pages/admin/attendance/AttendancePage"
+import { LeavePage } from "@/pages/leave/LeavePage"
+import { PipelineBoard } from "@/pages/crm/PipelineBoard"
+import { NewLeadForm } from "@/pages/crm/NewLeadForm"
+import { LeadDetail } from "@/pages/crm/LeadDetail"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,6 +31,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthProvider>
+          <PermissionsProvider>
           <Routes>
             {/* Public — redirects to / if already logged in */}
             <Route element={<PublicOnlyRoute />}>
@@ -35,11 +46,25 @@ function App() {
                 <Route path="/recruitment/:jobOpening" element={<RecruitmentPage />} />
                 <Route path="/employees" element={<EmployeesPage />} />
                 <Route path="/employees/:id" element={<EmployeeDetailPage />} />
+                {/* Profile routes */}
+                <Route path="/my-profile" element={<EmployeeProfilePage />} />
+                <Route path="/employee/profile/:id" element={<EmployeeProfilePage />} />
+                {/* Admin routes */}
+                <Route path="/admin/employees" element={<AdminEmployeesPage />} />
+                <Route path="/admin/employees/:email" element={<AdminEmployeeDetailPage />} />
+                <Route path="/admin/permissions" element={<PermissionsPage />} />
+                <Route path="/admin/attendance" element={<AttendancePage />} />
+                <Route path="/leave" element={<LeavePage />} />
+                {/* CRM routes */}
+                <Route path="/crm" element={<PipelineBoard />} />
+                <Route path="/crm/new" element={<NewLeadForm />} />
+                <Route path="/crm/:id" element={<LeadDetail />} />
                 {/* Catch-all: redirect unknown paths to dashboard */}
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
             </Route>
           </Routes>
+          </PermissionsProvider>
         </AuthProvider>
       </BrowserRouter>
       <Toaster />

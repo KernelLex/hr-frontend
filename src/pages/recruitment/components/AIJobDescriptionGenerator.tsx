@@ -5,7 +5,7 @@ import { Sparkles, Pencil, Check, X, Download, Copy, Loader2, AlertTriangle, Che
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { useSaveJD } from "../hooks/useRecruitment"
+import { useSaveJD, useDesignations, useDepartments } from "../hooks/useRecruitment"
 import type { JDSection, JDFormDetails } from "../types"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -493,6 +493,8 @@ export function AIJobDescriptionGenerator({ open, onClose, onCreated }: Props) {
   const [rounds] = useState<Array<{ interview_round: string; is_required: number }>>([])
 
   const saveJD = useSaveJD()
+  const { data: designations = [] } = useDesignations()
+  const { data: departments = [] } = useDepartments()
 
   function setFormField(k: keyof JDFormDetails, v: string) {
     setForm((f) => ({ ...f, [k]: v }))
@@ -724,11 +726,25 @@ export function AIJobDescriptionGenerator({ open, onClose, onCreated }: Props) {
                 </div>
                 <div>
                   <label className="text-xs font-medium text-gray-700 mb-1 block">Designation *</label>
-                  <Input value={form.designation} onChange={(e) => setFormField("designation", e.target.value)} placeholder="Software Engineer" className="text-sm" />
+                  <select
+                    className="w-full text-sm border rounded-md px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400 bg-white"
+                    value={form.designation}
+                    onChange={(e) => setFormField("designation", e.target.value)}
+                  >
+                    <option value="">Select designation…</option>
+                    {designations.map((d) => <option key={d} value={d}>{d}</option>)}
+                  </select>
                 </div>
                 <div>
                   <label className="text-xs font-medium text-gray-700 mb-1 block">Department</label>
-                  <Input value={form.department} onChange={(e) => setFormField("department", e.target.value)} placeholder="Engineering" className="text-sm" />
+                  <select
+                    className="w-full text-sm border rounded-md px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400 bg-white"
+                    value={form.department}
+                    onChange={(e) => setFormField("department", e.target.value)}
+                  >
+                    <option value="">Select department…</option>
+                    {departments.map((d) => <option key={d.name} value={d.name}>{d.label}</option>)}
+                  </select>
                 </div>
                 <div>
                   <label className="text-xs font-medium text-gray-700 mb-1 block">Location</label>

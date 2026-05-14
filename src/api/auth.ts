@@ -15,7 +15,15 @@ export async function loginUser(email: string, password: string): Promise<User> 
     return MOCK_USER
   }
   const res = await api.post(apiUrl("login"), { usr: email, pwd: password })
-  if (res.data.message !== "Logged In") throw new Error("Login failed")
+  // Frappe returns "Logged In" for users with a default app, "No App" for users without one.
+  // Both mean login succeeded — only "Invalid login credentials" means failure.
+  const msg: string = res.data.message ?? ""
+  if (msg.toLowerCase().includes("invalid") || msg.toLowerCase().includes("error")) {
+    throw new Error("Invalid email or password")
+  }
+  if (!msg || (msg !== "Logged In" && msg !== "No App" && !res.data.full_name)) {
+    throw new Error("Login failed")
+  }
   return {
     name: email,
     full_name: res.data.full_name ?? email,

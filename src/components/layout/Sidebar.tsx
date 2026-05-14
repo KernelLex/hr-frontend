@@ -6,16 +6,30 @@ import {
   BarChart2,
   Receipt,
   Briefcase,
+  Shield,
+  UserCircle,
+  UserCog,
+  CalendarDays,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/context/AuthContext"
+import { usePermissions } from "@/context/PermissionsContext"
+import { usePendingApprovals } from "@/pages/crm/useCRM"
+
+const ADMIN_USERS = new Set(["Administrator", "owais@veraenterprises.in"])
 
 const NAV_ITEMS = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, enabled: true },
-  { to: "/recruitment", label: "Recruitment", icon: Briefcase, enabled: true },
-  { to: "/employees", label: "Employees", icon: Users, enabled: true },
-  { to: "/attendance", label: "Attendance", icon: Clock, enabled: false },
-  { to: "/performance", label: "Performance", icon: BarChart2, enabled: false },
-  { to: "/expenses", label: "Expenses", icon: Receipt, enabled: false },
+  { to: "/", label: "Dashboard", icon: LayoutDashboard, enabled: true, adminOnly: false, module: null },
+  { to: "/my-profile", label: "My Profile", icon: UserCircle, enabled: true, adminOnly: false, module: null },
+  { to: "/leave", label: "Leave", icon: CalendarDays, enabled: true, adminOnly: false, module: "attendance" },
+  { to: "/recruitment", label: "Recruitment", icon: Briefcase, enabled: true, adminOnly: false, module: "recruitment" },
+  { to: "/crm", label: "CRM", icon: Briefcase, enabled: true, adminOnly: false, module: null },
+  { to: "/employees", label: "Employees", icon: Users, enabled: true, adminOnly: false, module: "employee_lifecycle" },
+  { to: "/admin/attendance", label: "Attendance", icon: Clock, enabled: true, adminOnly: true, module: null },
+  { to: "/performance", label: "Performance", icon: BarChart2, enabled: false, adminOnly: false, module: null },
+  { to: "/expenses", label: "Expenses", icon: Receipt, enabled: false, adminOnly: false, module: "expense" },
+  { to: "/admin/employees", label: "Team", icon: UserCog, enabled: true, adminOnly: true, module: null },
+  { to: "/admin/permissions", label: "Permissions", icon: Shield, enabled: true, adminOnly: true, module: null },
 ]
 
 interface SidebarProps {
@@ -23,6 +37,20 @@ interface SidebarProps {
 }
 
 export function Sidebar({ open = true }: SidebarProps) {
+  const { user } = useAuth()
+  const { moduleEnabled } = usePermissions()
+  const isAdmin = user && ADMIN_USERS.has(user.name)
+  const isOwais = isAdmin
+
+  const { data: pendingData } = usePendingApprovals(!!isOwais)
+  const crmPendingCount = pendingData?.count ?? 0
+
+  const visibleItems = NAV_ITEMS.filter(
+    (item) =>
+      (!item.adminOnly || isAdmin) &&
+      (!item.module || moduleEnabled(item.module))
+  )
+
   return (
     <aside
       className={cn(
@@ -31,10 +59,10 @@ export function Sidebar({ open = true }: SidebarProps) {
       )}
     >
       <div className="h-14 flex items-center px-4 border-b border-gray-800 shrink-0">
-        <span className="font-bold text-white text-base tracking-tight whitespace-nowrap">ClientERP</span>
+        <span className="font-bold text-white text-base tracking-tight whitespace-nowrap">Vera ERP</span>
       </div>
       <nav className="flex-1 py-3 px-2 space-y-0.5">
-        {NAV_ITEMS.map(({ to, label, icon: Icon, enabled }) =>
+        {visibleItems.map(({ to, label, icon: Icon, enabled, adminOnly }) =>
           enabled ? (
             <NavLink
               key={to}
@@ -44,13 +72,23 @@ export function Sidebar({ open = true }: SidebarProps) {
                 cn(
                   "flex items-center gap-2.5 px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap",
                   isActive
-                    ? "bg-blue-600 text-white"
+                    ? adminOnly ? "bg-purple-600 text-white" : "bg-blue-600 text-white"
                     : "text-gray-400 hover:bg-gray-800 hover:text-gray-100"
                 )
               }
             >
               <Icon size={16} />
               {label}
+              {to === "/crm" && isOwais && crmPendingCount > 0 && (
+                <span className="ml-auto bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+                  {crmPendingCount}
+                </span>
+              )}
+              {adminOnly && to !== "/crm" && (
+                <span className="ml-auto text-[9px] bg-purple-800 text-purple-200 px-1.5 py-0.5 rounded font-normal">
+                  admin
+                </span>
+              )}
             </NavLink>
           ) : (
             <div

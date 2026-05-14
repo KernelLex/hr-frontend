@@ -15,6 +15,8 @@ export default defineConfig({
       "/api": {
         target: "http://hrms.localhost:8000",
         changeOrigin: true,
+        // Rewrite cookie domain so browser on localhost accepts them
+        cookieDomainRewrite: "localhost",
       },
     },
   },

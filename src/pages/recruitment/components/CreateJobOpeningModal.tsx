@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useCreateJobOpeningMutation, useInterviewRounds } from "../hooks/useRecruitment"
+import { useCreateJobOpeningMutation, useInterviewRounds, useDesignations, useDepartments } from "../hooks/useRecruitment"
 import { Plus, Trash2 } from "lucide-react"
 
 interface RoundRow {
@@ -19,6 +19,9 @@ interface Props {
 export function CreateJobOpeningModal({ open, onClose, onCreated }: Props) {
   const create = useCreateJobOpeningMutation()
   const { data: roundsData } = useInterviewRounds()
+  const { data: designations = [] } = useDesignations()
+  const { data: departments = [] } = useDepartments()
+
   const [form, setForm] = useState({
     job_title: "", designation: "", department: "", description: "",
     employment_type: "", location: "", lower_range: "", upper_range: "",
@@ -55,6 +58,8 @@ export function CreateJobOpeningModal({ open, onClose, onCreated }: Props) {
     })
   }
 
+  const selectClass = "w-full text-sm border rounded-md px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400 bg-white"
+
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
@@ -65,23 +70,29 @@ export function CreateJobOpeningModal({ open, onClose, onCreated }: Props) {
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2">
               <label className="text-xs font-medium text-gray-700 mb-1 block">Job Title *</label>
-              <Input placeholder="Senior Backend Engineer" value={form.job_title} onChange={(e) => set("job_title", e.target.value)} />
+              <Input placeholder="e.g. Senior Accounts Manager" value={form.job_title} onChange={(e) => set("job_title", e.target.value)} />
             </div>
             <div>
               <label className="text-xs font-medium text-gray-700 mb-1 block">Designation *</label>
-              <Input placeholder="Software Engineer" value={form.designation} onChange={(e) => set("designation", e.target.value)} />
+              <select className={selectClass} value={form.designation} onChange={(e) => set("designation", e.target.value)}>
+                <option value="">Select designation…</option>
+                {designations.map((d) => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="text-xs font-medium text-gray-700 mb-1 block">Department</label>
-              <Input placeholder="Engineering" value={form.department} onChange={(e) => set("department", e.target.value)} />
+              <select className={selectClass} value={form.department} onChange={(e) => set("department", e.target.value)}>
+                <option value="">Select department…</option>
+                {departments.map((d) => (
+                  <option key={d.name} value={d.name}>{d.label}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="text-xs font-medium text-gray-700 mb-1 block">Employment Type</label>
-              <select
-                className="w-full text-sm border rounded-md px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400"
-                value={form.employment_type}
-                onChange={(e) => set("employment_type", e.target.value)}
-              >
+              <select className={selectClass} value={form.employment_type} onChange={(e) => set("employment_type", e.target.value)}>
                 <option value="">Select…</option>
                 <option value="Full-time">Full-time</option>
                 <option value="Part-time">Part-time</option>
