@@ -138,6 +138,28 @@ export function useCreateJobOpeningMutation() {
   })
 }
 
+export function useCloseJobOpening() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (job_id: string) => {
+      const res = await api.post(apiUrl("hr_client.api.recruitment.close_job_opening"), { job_id })
+      return res.data.message
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["job_openings"] }),
+  })
+}
+
+export function useDeleteJobOpening() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (job_id: string) => {
+      const res = await api.post(apiUrl("hr_client.api.recruitment.delete_job_opening"), { job_id })
+      return res.data.message
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["job_openings"] }),
+  })
+}
+
 export function useScheduleInterviewMutation() {
   const qc = useQueryClient()
   return useMutation({

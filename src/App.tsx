@@ -8,6 +8,7 @@ import { Layout } from "@/components/layout/Layout"
 import { Login } from "@/pages/Login"
 import { Dashboard } from "@/pages/Dashboard"
 import { RecruitmentPage } from "@/pages/recruitment/RecruitmentPage"
+import { PipelinePage } from "@/pages/recruitment/PipelinePage"
 import { EmployeesPage } from "@/pages/employees/EmployeesPage"
 import { EmployeeDetailPage } from "@/pages/employees/EmployeeDetailPage"
 import { PermissionsPage } from "@/pages/admin/permissions/PermissionsPage"
@@ -46,7 +47,7 @@ function App() {
               <Route element={<Layout />}>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/recruitment" element={<RecruitmentPage />} />
-                <Route path="/recruitment/:jobOpening" element={<RecruitmentPage />} />
+                <Route path="/recruitment/pipeline/:jobOpening" element={<PipelinePage />} />
                 <Route path="/employees" element={<EmployeesPage />} />
                 <Route path="/employees/:id" element={<EmployeeDetailPage />} />
                 {/* Profile routes */}
