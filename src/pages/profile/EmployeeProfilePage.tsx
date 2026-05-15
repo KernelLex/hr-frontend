@@ -103,9 +103,12 @@ interface ProfileSectionProps {
 
 function Section({ title, children }: ProfileSectionProps) {
   return (
-    <Card className="bg-white shadow-sm border-0 ring-1 ring-gray-100">
+    <Card className="bg-white shadow-sm border-0" style={{ border: "var(--border-card)", borderRadius: "12px", boxShadow: "var(--shadow-card)" }}>
       <CardHeader className="pb-3 pt-4 px-5">
-        <CardTitle className="text-sm font-semibold text-gray-700">{title}</CardTitle>
+        <CardTitle className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+          <span className="w-1 h-4 rounded-full inline-block" style={{ backgroundColor: "var(--brand-primary)" }} />
+          {title}
+        </CardTitle>
       </CardHeader>
       <CardContent className="px-5 pb-5">
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">{children}</div>
@@ -249,19 +252,34 @@ export function EmployeeProfilePage() {
         )}
       </div>
 
-      {/* Avatar + ID card */}
-      <Card className="bg-white shadow-sm border-0 ring-1 ring-gray-100">
-        <CardContent className="pt-5 pb-5 px-5">
-          <div className="flex items-center gap-5">
-            <div className="relative">
-              <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden shrink-0">
+      {/* Avatar + ID card with gradient banner */}
+      <Card className="border-0 overflow-hidden" style={{ border: "var(--border-card)", borderRadius: "16px", boxShadow: "var(--shadow-card)" }}>
+        {/* Gradient banner */}
+        <div
+          className="h-20 relative"
+          style={{ background: "linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)" }}
+        />
+        {/* Avatar overlapping banner */}
+        <CardContent className="px-5 pb-5 pt-0">
+          <div className="relative" style={{ marginTop: "-36px" }}>
+            <div className="relative inline-block">
+              <div
+                className="w-[72px] h-[72px] rounded-full flex items-center justify-center overflow-hidden shrink-0"
+                style={{
+                  backgroundColor: "#EEF2FF",
+                  border: "3px solid white",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                }}
+              >
                 {photoUrl ? (
                   <img src={photoUrl} alt={profile.employee_name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-2xl font-semibold text-blue-600">{getInitials(profile.employee_name)}</span>
+                  <span className="text-xl font-bold" style={{ color: "var(--brand-primary)" }}>
+                    {getInitials(profile.employee_name)}
+                  </span>
                 )}
               </div>
-              {editMode && (canEdit) && (
+              {editMode && canEdit && (
                 <button
                   className="absolute bottom-0 right-0 bg-white border border-gray-200 rounded-full p-1 shadow hover:bg-gray-50"
                   onClick={() => fileInputRef.current?.click()}
@@ -280,15 +298,32 @@ export function EmployeeProfilePage() {
                 }}
               />
             </div>
-            <div className="space-y-1">
-              <p className="text-lg font-semibold text-gray-900">{profile.employee_name}</p>
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge variant="secondary" className="text-xs font-normal">{profile.employee_id}</Badge>
-                <Badge variant="secondary" className="text-xs font-normal bg-blue-50 text-blue-700">{profile.designation}</Badge>
-                <Badge variant="secondary" className="text-xs font-normal bg-emerald-50 text-emerald-700">Active</Badge>
-              </div>
-              <p className="text-sm text-gray-500">{profile.company_email}</p>
+          </div>
+          <div className="mt-3 space-y-1.5">
+            <p className="font-bold" style={{ fontSize: "22px", color: "var(--text-primary)" }}>
+              {profile.employee_name}
+            </p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span
+                className="text-xs font-medium px-2.5 py-0.5 rounded-full"
+                style={{ backgroundColor: "#EEF2FF", color: "#3730A3" }}
+              >
+                {profile.designation}
+              </span>
+              <span
+                className="text-xs font-medium px-2.5 py-0.5 rounded-full"
+                style={{ backgroundColor: "#EEF2FF", color: "#3730A3" }}
+              >
+                {departmentLabel(profile.department)}
+              </span>
+              <span className="flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full" style={{ backgroundColor: "#ECFDF5", color: "#065F46" }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                Active
+              </span>
             </div>
+            <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+              {profile.company_email}
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -320,11 +355,12 @@ export function EmployeeProfilePage() {
       </Section>
 
       {/* Documents */}
-      <Card className="bg-white shadow-sm border-0 ring-1 ring-gray-100">
+      <Card className="bg-white shadow-sm border-0" style={{ border: "var(--border-card)", borderRadius: "12px", boxShadow: "var(--shadow-card)" }}>
         <CardHeader className="pb-3 pt-4 px-5">
-          <CardTitle className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+          <CardTitle className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+            <span className="w-1 h-4 rounded-full inline-block" style={{ backgroundColor: "var(--brand-primary)" }} />
             Documents
-            {!isAdmin && <Lock size={12} className="text-gray-300" />}
+            {!isAdmin && <Lock size={12} className="text-gray-300 ml-1" />}
           </CardTitle>
         </CardHeader>
         <CardContent className="px-5 pb-5">
@@ -366,9 +402,12 @@ export function EmployeeProfilePage() {
       </Section>
 
       {/* Skills */}
-      <Card className="bg-white shadow-sm border-0 ring-1 ring-gray-100">
+      <Card className="bg-white shadow-sm border-0" style={{ border: "var(--border-card)", borderRadius: "12px", boxShadow: "var(--shadow-card)" }}>
         <CardHeader className="pb-3 pt-4 px-5">
-          <CardTitle className="text-sm font-semibold text-gray-700">Skills & Qualifications</CardTitle>
+          <CardTitle className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+            <span className="w-1 h-4 rounded-full inline-block" style={{ backgroundColor: "var(--brand-primary)" }} />
+            Skills & Qualifications
+          </CardTitle>
         </CardHeader>
         <CardContent className="px-5 pb-5 space-y-4">
           <div className="space-y-1.5">
@@ -418,13 +457,24 @@ export function EmployeeProfilePage() {
   return (
     <div className="p-6 max-w-4xl space-y-5">
       <Tabs defaultValue="profile">
-        <TabsList className="border border-gray-200 bg-gray-50">
-          <TabsTrigger value="profile" className="text-xs px-4">Profile</TabsTrigger>
-          <TabsTrigger value="leave" className="text-xs px-4 flex items-center gap-1">
-            <CalendarDays size={12} /> Leave History
+        <TabsList className="border-b border-gray-200 bg-transparent rounded-none w-full justify-start gap-0 h-auto p-0">
+          <TabsTrigger
+            value="profile"
+            className="text-sm px-4 py-2.5 rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:text-indigo-700 data-[state=active]:bg-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+          >
+            Profile
           </TabsTrigger>
-          <TabsTrigger value="attendance" className="text-xs px-4 flex items-center gap-1">
-            <Clock size={12} /> Attendance
+          <TabsTrigger
+            value="leave"
+            className="text-sm px-4 py-2.5 rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:text-indigo-700 data-[state=active]:bg-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50 flex items-center gap-1"
+          >
+            <CalendarDays size={13} /> Leave History
+          </TabsTrigger>
+          <TabsTrigger
+            value="attendance"
+            className="text-sm px-4 py-2.5 rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:text-indigo-700 data-[state=active]:bg-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50 flex items-center gap-1"
+          >
+            <Clock size={13} /> Attendance
           </TabsTrigger>
         </TabsList>
 

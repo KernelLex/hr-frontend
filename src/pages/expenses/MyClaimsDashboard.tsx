@@ -1,9 +1,9 @@
 import { useState } from "react"
+import type React from "react"
 import { useNavigate } from "react-router-dom"
 import { Plus, Receipt, ChevronDown, ChevronUp, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/context/AuthContext"
 import { useMyClaims, useMonthlyExpenseSummary } from "./useExpenses"
@@ -24,8 +24,10 @@ function statusClass(status: ClaimStatus) {
     : "bg-orange-100 text-orange-800"
 }
 
-function typeClass(type: string) {
-  return type === "Petrol" ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"
+function typeStyle(type: string): React.CSSProperties {
+  return type === "Petrol"
+    ? { backgroundColor: "#DBEAFE", color: "#1E40AF" }
+    : { backgroundColor: "#EDE9FE", color: "#5B21B6" }
 }
 
 function ClaimRow({ claim }: { claim: ExpenseClaim }) {
@@ -33,16 +35,33 @@ function ClaimRow({ claim }: { claim: ExpenseClaim }) {
   const receipt = claim.claim_type === "Petrol" ? claim.fuel_receipt : claim.material_receipt
 
   return (
-    <div className="border border-gray-100 rounded-lg overflow-hidden">
+    <div
+      className="rounded-[10px] overflow-hidden transition-all duration-150"
+      style={{ border: "1px solid #E2E8F0", marginBottom: "8px" }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget as HTMLDivElement
+        el.style.borderColor = "#A5B4FC"
+        el.style.boxShadow = "var(--shadow-card-hover)"
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget as HTMLDivElement
+        el.style.borderColor = "#E2E8F0"
+        el.style.boxShadow = "none"
+      }}
+    >
       <button
-        className="w-full flex items-center gap-3 px-4 py-3 bg-white hover:bg-gray-50 transition-colors text-left"
+        className="w-full flex items-center gap-3 bg-white text-left transition-colors"
+        style={{ padding: "14px 18px" }}
         onClick={() => setExpanded((v) => !v)}
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <Badge className={cn("text-[10px]", typeClass(claim.claim_type))}>
+            <span
+              className="text-[11px] font-medium px-2 py-0.5 rounded"
+              style={typeStyle(claim.claim_type)}
+            >
               {claim.claim_type === "Petrol" ? "⛽" : "📦"} {claim.claim_type}
-            </Badge>
+            </span>
             <span className="text-xs text-gray-500">{claim.claim_date}</span>
           </div>
           <p className="text-sm text-gray-800 truncate">{claim.purpose}</p>
@@ -100,14 +119,24 @@ function ClaimRow({ claim }: { claim: ExpenseClaim }) {
   )
 }
 
-function SummaryCard({ label, amount, color }: { label: string; amount: number; color: string }) {
+interface SummaryCardConfig {
+  label: string
+  amount: number
+  bg: string
+  border: string
+  amountColor: string
+  labelColor: string
+}
+
+function SummaryCard({ label, amount, bg, border, amountColor, labelColor }: SummaryCardConfig) {
   return (
-    <Card className={cn("border-0 shadow-sm", color)}>
-      <CardContent className="pt-4 pb-3 px-4">
-        <p className="text-xs font-medium opacity-80">{label}</p>
-        <p className="text-xl font-bold mt-1">{fmt(amount)}</p>
-      </CardContent>
-    </Card>
+    <div
+      className="rounded-xl p-5"
+      style={{ backgroundColor: bg, border: `1px solid ${border}`, borderRadius: "12px" }}
+    >
+      <p className="text-xs font-medium" style={{ color: labelColor }}>{label}</p>
+      <p className="text-xl font-bold mt-1" style={{ color: amountColor }}>{fmt(amount)}</p>
+    </div>
   )
 }
 
@@ -179,10 +208,22 @@ export function MyClaimsDashboard() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <SummaryCard label="Total Claimed" amount={summary?.total_claimed ?? 0} color="bg-gray-50 text-gray-900" />
-        <SummaryCard label="Approved" amount={summary?.total_approved ?? 0} color="bg-green-50 text-green-900" />
-        <SummaryCard label="Pending" amount={summary?.total_pending ?? 0} color="bg-orange-50 text-orange-900" />
-        <SummaryCard label="Rejected" amount={summary?.total_rejected ?? 0} color="bg-red-50 text-red-900" />
+        <SummaryCard
+          label="Total Claimed" amount={summary?.total_claimed ?? 0}
+          bg="#FFFFFF" border="#A5B4FC" amountColor="#3730A3" labelColor="#4338CA"
+        />
+        <SummaryCard
+          label="Approved" amount={summary?.total_approved ?? 0}
+          bg="#ECFDF5" border="#6EE7B7" amountColor="#065F46" labelColor="#047857"
+        />
+        <SummaryCard
+          label="Pending" amount={summary?.total_pending ?? 0}
+          bg="#FFFBEB" border="#FCD34D" amountColor="#92400E" labelColor="#B45309"
+        />
+        <SummaryCard
+          label="Rejected" amount={summary?.total_rejected ?? 0}
+          bg="#FEF2F2" border="#FCA5A5" amountColor="#991B1B" labelColor="#DC2626"
+        />
       </div>
 
       {/* Claims list */}

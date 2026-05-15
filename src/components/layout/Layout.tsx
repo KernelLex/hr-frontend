@@ -7,7 +7,7 @@ export function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: "var(--bg-app)" }}>
       <Sidebar open={sidebarOpen} />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <TopBar onToggleSidebar={() => setSidebarOpen(v => !v)} />
