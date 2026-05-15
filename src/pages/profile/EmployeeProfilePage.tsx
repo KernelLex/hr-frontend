@@ -23,11 +23,12 @@ const ADMIN_USERS = new Set(["Administrator", "owais@veraenterprises.in"])
 
 const SELF_EDITABLE = new Set([
   "image", "personal_email", "cell_number", "person_to_be_contacted",
-  "emergency_phone_number", "current_address", "blood_group",
+  "emergency_phone_number", "current_address", "blood_group", "gender",
   "bank_name", "bank_ac_no", "custom_ifsc_code", "custom_skills",
 ])
 
 const BLOOD_GROUPS = ["", "A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
+const GENDER_OPTIONS = ["", "Male", "Female", "Non-binary", "Prefer not to say"]
 
 function getInitials(name: string) {
   return name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2)
@@ -35,6 +36,22 @@ function getInitials(name: string) {
 
 function departmentLabel(dept: string) {
   return dept.replace(/ - V$/, "")
+}
+
+function formatDateDisplay(date: string): string {
+  if (!date) return ""
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return date
+  return d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })
+}
+
+function formatPhone(phone: string): string {
+  if (!phone) return ""
+  const digits = phone.replace(/\D/g, "")
+  if (digits.length === 10) {
+    return `+91 ${digits.slice(0, 5)} ${digits.slice(5)}`
+  }
+  return phone
 }
 
 interface FieldProps {
@@ -56,12 +73,20 @@ function ProfileField({ label, value, field, editMode, isAdmin, isSelf, draft, o
   const canEdit = editMode && (isAdmin || (isSelf && SELF_EDITABLE.has(field)))
   const currentVal = (draft[field] as string) ?? value
 
+  // Display value with field-specific formatting
+  function displayValue(raw: string) {
+    if (!raw) return <span className="text-gray-400 italic">Not set</span>
+    if (field === "date_of_birth" || (field === "date_of_joining" && !canEdit)) return formatDateDisplay(raw)
+    if (field === "cell_number" || field === "emergency_phone_number") return formatPhone(raw)
+    return raw
+  }
+
   if (!canEdit) {
     return (
       <div className="space-y-0.5">
         <p className="text-[11px] text-gray-400 font-medium uppercase tracking-wide">{label}</p>
         <div className="flex items-center gap-1.5">
-          <p className="text-sm text-gray-800">{currentVal || <span className="text-gray-400 italic">Not set</span>}</p>
+          <p className="text-sm text-gray-800">{displayValue(currentVal)}</p>
           {editMode && locked && <Lock size={11} className="text-gray-300" />}
         </div>
       </div>
@@ -331,7 +356,7 @@ export function EmployeeProfilePage() {
       {/* Personal Info */}
       <Section title="Personal Information">
         <ProfileField {...fieldProps("date_of_birth")} label="Date of Birth" type="date" />
-        <ProfileField {...fieldProps("gender")} label="Gender" />
+        <ProfileField {...fieldProps("gender")} label="Gender" as="select" options={GENDER_OPTIONS} />
         <ProfileField {...fieldProps("blood_group")} label="Blood Group" as="select" options={BLOOD_GROUPS} />
         <ProfileField {...fieldProps("personal_email")} label="Personal Email" type="email" />
         <ProfileField {...fieldProps("cell_number")} label="Personal Phone" />
