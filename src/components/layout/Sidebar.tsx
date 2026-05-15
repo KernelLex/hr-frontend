@@ -27,7 +27,7 @@ const NAV_ITEMS = [
   { to: "/employees", label: "Employees", icon: Users, enabled: true, adminOnly: false, module: "employee_lifecycle" },
   { to: "/admin/attendance", label: "Attendance", icon: Clock, enabled: true, adminOnly: true, module: null },
   { to: "/performance", label: "Performance", icon: BarChart2, enabled: false, adminOnly: false, module: null },
-  { to: "/expenses", label: "Expenses", icon: Receipt, enabled: false, adminOnly: false, module: "expense" },
+  { to: "/expenses", label: "Expenses", icon: Receipt, enabled: true, adminOnly: false, module: null },
   { to: "/admin/employees", label: "Team", icon: UserCog, enabled: true, adminOnly: true, module: null },
   { to: "/admin/permissions", label: "Permissions", icon: Shield, enabled: true, adminOnly: true, module: null },
 ]

@@ -19,6 +19,9 @@ import { LeavePage } from "@/pages/leave/LeavePage"
 import { PipelineBoard } from "@/pages/crm/PipelineBoard"
 import { NewLeadForm } from "@/pages/crm/NewLeadForm"
 import { LeadDetail } from "@/pages/crm/LeadDetail"
+import { MyClaimsDashboard } from "@/pages/expenses/MyClaimsDashboard"
+import { NewClaimForm } from "@/pages/expenses/NewClaimForm"
+import { AdminClaimsView } from "@/pages/expenses/AdminClaimsView"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -59,6 +62,10 @@ function App() {
                 <Route path="/crm" element={<PipelineBoard />} />
                 <Route path="/crm/new" element={<NewLeadForm />} />
                 <Route path="/crm/:id" element={<LeadDetail />} />
+                {/* Expense routes */}
+                <Route path="/expenses" element={<MyClaimsDashboard />} />
+                <Route path="/expenses/new" element={<NewClaimForm />} />
+                <Route path="/expenses/admin" element={<AdminClaimsView />} />
                 {/* Catch-all: redirect unknown paths to dashboard */}
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Route>

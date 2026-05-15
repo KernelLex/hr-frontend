@@ -99,4 +99,9 @@
     @apply bg-background text-foreground;
     font-family: Inter, system-ui, sans-serif;
   }
+  select,
+  select option {
+    background-color: white;
+    color: #111827;
+  }
 }
